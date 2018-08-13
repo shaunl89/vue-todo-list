@@ -5,8 +5,9 @@
         <input
           class="form-control"
           :value="newTodo"
-          @change="getTodo"
-          placeholder="I need to..."
+          @change="setNewTodo"
+          @keyup.enter="addTodo"
+          placeholder="What I need to do..."
         >
         <button class="btn btn-primary input-group-btn" @click="addTodo">Add Todo</button>
       </div>
@@ -16,19 +17,19 @@
 <script>
   export default {
     methods: {
-      getTodo(e) {
-        this.$store.dispatch('getTodo', e.target.value)
+      setNewTodo(e) {
+        this.$store.dispatch('setNewTodo', e.target.value)
       },
       addTodo() {
-        this.$store.dispatch('addTodo'),
-        this.$store.dispatch('clearTodo')
+        this.$store.dispatch('addTodo')
+        this.$store.dispatch('clearNewTodo')
       }
     },
     computed: {
       newTodo() {
         return this.$store.getters.newTodo
       }
-    }
+    },
   }
 </script>
 

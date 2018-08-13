@@ -1,12 +1,12 @@
 <template>
   <div id="current-todos" class="container">
     <h3 v-if="todos.length > 0">
-      Current: {{todos.length}}
+      Outstanding Tasks: {{todos.length}}
     </h3>
     <h3 v-else>No items</h3>
     <ul class="list-group">
       <li class="list-group-item" v-for="(todo, index) in todos" :key="`item=${index}`">
-        {{todo.body}}
+        {{todo.title}}
         <div class="btn-group">
           <button type="button" @click="edit(todo)" class="btn btn-default btn-sm">
             <span class="glyphicon glyphicon-edit"></span>
@@ -43,7 +43,7 @@
       todos() {
         return this.$store.getters.todos
       }
-    }
+    },
   }
 </script>
 

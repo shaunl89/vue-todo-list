@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <router-link to="/hello">Hello</router-link>
+    <router-link to="/about">About</router-link>
+
     <GetTodo></GetTodo>
     <CurrentTodos></CurrentTodos>
     <CompletedTodos></CompletedTodos>
@@ -16,8 +19,11 @@ export default {
   components: {
     GetTodo,
     CurrentTodos,
-    CompletedTodos
+    CompletedTodos,
   },
+  created() {
+    this.$store.dispatch('loadTodos')
+  }
 }
 </script>
 
