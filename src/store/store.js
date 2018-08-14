@@ -135,14 +135,25 @@ export default new Vuex.Store({
     },
     completeTodo({ commit }, todo) {
       console.log('todo to be completed', todo.completed)
-      Axios
-      .put(
-        `${API}${todo.id}`,
-        qs.stringify({
+      Axios({
+        method: 'put',
+        url: `${API}${todo.id}`,
+        data: qs.stringify({
           title: todo.title,
           completed: !todo.completed,
-        })
-      )
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+      })
+      // .put(
+      //   `${API}${todo.id}`,
+      //   qs.stringify({
+      //     title: todo.title,
+      //     completed: !todo.completed,
+      //   })
+      // )
       .then(response => {
         // eslint-disable-next-line no-console
         console.log(response, todo.id, 'has been completed: ', todo.completed)
