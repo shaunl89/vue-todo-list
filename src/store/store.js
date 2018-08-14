@@ -2,7 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Axios from 'axios'
 import { isEmpty } from 'lodash'
+import qs from 'qs'
 import { API } from './helpers'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -11,7 +13,6 @@ export default new Vuex.Store({
     newTodo: '',
     loading: false,
   },
-
   mutations: {
     SET_TODOS(state, todos) {
       state.todos = todos
@@ -22,24 +23,18 @@ export default new Vuex.Store({
     ADD_TODO(state, todoObject) {
       state.todos.push(todoObject)
     },
-    EDIT_TODO(state, todo) {
-      var todos = state.todos
-      todos.splice(todos.indexOf(todo), 1)
-      state.todos = todos
-      state.newTodo = todo.body
-    },
     REMOVE_TODO(state, todo) {
       var todos = state.todos
       todos.splice(todos.indexOf(todo), 1)
     },
     COMPLETE_TODO(state, todo) {
-      todo.completed = !todo.completed
+      var todos = state.todos
+      todos[todos.indexOf(todo)].completed = !todos[todos.indexOf(todo)].completed
     },
     CLEAR_TODO(state) {
       state.newTodo = ''
     }
   },
-
   actions: {
     loadTodos({ commit }) {
       Axios
@@ -48,20 +43,58 @@ export default new Vuex.Store({
         .then(todos => {
           commit('SET_TODOS', todos.data)
         })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.warn(err)
+          Vue.notify({
+            group: 'main',
+            type: 'error',
+            title: 'Error',
+            text: 'Failed to load todos',
+          })
+        })
     },
     addTodo({ commit, state }) {
       if (isEmpty(state.newTodo)) {
+        Vue.notify({
+          group: 'main',
+          type: 'error',
+          title: 'Error',
+          text: 'Todo is empty',
+        })
         return
       }
       const todo = {
         title: state.newTodo,
-        completed: 0,
+        completed: false,
       }
-      console.log('todo when addTodo', todo)
       Axios
-        .post(API, todo)
-        .then(response => console.log('axios response', response))
-        .then(() => {commit('ADD_TODO', todo)})
+        .post(API, qs.stringify(todo))
+        .then(response => {
+          // eslint-disable-next-line no-console
+          console.log('axios response', response)
+        })
+        .then(() => {
+          commit('ADD_TODO', todo)
+        })
+        .then(
+          Vue.notify({
+            group: 'main',
+            type: 'success',
+            title: 'Success',
+            text: 'Todo added successfully',
+          })
+        )
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.warn(err)
+          Vue.notify({
+            group: 'main',
+            type: 'error',
+            title: 'Error',
+            text: 'Failed to add todo',
+          })
+        })
     },
     clearNewTodo({ commit }) {
       commit('CLEAR_TODO')
@@ -72,30 +105,72 @@ export default new Vuex.Store({
     removeTodo({ commit }, todo) {
       Axios
       .delete(`${API}${todo.id}`)
-      .then(response => console.log(response))
+      .then(response => {
+        // eslint-disable-next-line no-console
+        console.log(response)
+      })
       .then(() => {
+        // eslint-disable-next-line no-console
         console.log('removed todo', todo.id, 'from the server')
         commit('REMOVE_TODO', todo)
       })
-    },
-    completeTodo({ commit }, todo) {
-      Axios
-      .put(`${API}${todo.id}`, {completed: !todo.completed})
-      .then(response => {
-        console.log(response, todo.id, 'has been updated')
-        commit('COMPLETE_TODO', todo)
+      .then(
+        Vue.notify({
+          group: 'main',
+          type: 'success',
+          title: 'Success',
+          text: 'Todo deleted successfully',
+        })
+      )
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn(err)
+        Vue.notify({
+          group: 'main',
+          type: 'error',
+          title: 'Error',
+          text: 'Failed to delete todo',
+        })
       })
     },
-    // ###############################
-    editTodo({ commit }, todo) {
-      commit('EDIT_TODO', todo)
-    }
+    completeTodo({ commit }, todo) {
+      console.log('todo to be completed', todo.completed)
+      Axios
+      .put(
+        `${API}${todo.id}`,
+        qs.stringify({
+          title: todo.title,
+          completed: !todo.completed,
+        })
+      )
+      .then(response => {
+        // eslint-disable-next-line no-console
+        console.log(response, todo.id, 'has been completed: ', todo.completed)
+        commit('COMPLETE_TODO', todo)
+      })
+      .then(
+        Vue.notify({
+          group: 'main',
+          type: 'success',
+          title: 'Success',
+          text: 'Todo updated successfully',
+        })
+      )
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn(err)
+        Vue.notify({
+          group: 'main',
+          type: 'error',
+          title: 'Error',
+          text: 'Failed to update todo',
+        })
+      })
+    },
   },
-
   getters: {
     newTodo: state => state.newTodo,
-    todos: state => state.todos,
-    // todos: state => state.todos.filter((todo) => !todo.completed),
+    todos: state => state.todos.filter((todo) => !todo.completed),
     completedTodos: state => state.todos.filter((todo) => todo.completed)
   }
 })

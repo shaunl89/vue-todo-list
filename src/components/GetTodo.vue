@@ -38,6 +38,6 @@
   margin-right: 5px;
 }
 #get-todo{
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 </style>

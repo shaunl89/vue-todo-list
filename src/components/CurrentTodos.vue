@@ -8,16 +8,12 @@
       <li class="list-group-item" v-for="(todo, index) in todos" :key="`item=${index}`">
         {{todo.title}}
         <div class="btn-group">
-          <button type="button" @click="edit(todo)" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-edit"></span>
-            Edit
-          </button>
           <button type="button" @click="complete(todo)" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-ok-circle"></span>
+            <span class="fa fa-check-circle"></span>
             Complete
           </button>
           <button type="button" @click="remove(todo)" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-remove-circle"></span>
+            <span class="fa fa-times-circle"></span>
             Remove
           </button>
         </div>
@@ -29,9 +25,6 @@
 <script>
   export default{
     methods: {
-      edit(todo) {
-        this.$store.dispatch('editTodo', todo)
-      },
       complete(todo) {
         this.$store.dispatch('completeTodo', todo)
       },
@@ -44,6 +37,9 @@
         return this.$store.getters.todos
       }
     },
+    created() {
+      this.$store.dispatch('loadTodos')
+    }
   }
 </script>
 
@@ -52,6 +48,6 @@
     float: right;
   }
   #current-todos{
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
 </style>

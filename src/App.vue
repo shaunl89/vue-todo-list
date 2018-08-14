@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <router-link to="/hello">Hello</router-link>
-    <router-link to="/about">About</router-link>
+    <notifications group="main" />
 
     <GetTodo></GetTodo>
     <CurrentTodos></CurrentTodos>
@@ -21,13 +20,10 @@ export default {
     CurrentTodos,
     CompletedTodos,
   },
-  created() {
-    this.$store.dispatch('loadTodos')
-  }
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
