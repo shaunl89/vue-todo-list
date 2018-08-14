@@ -33,6 +33,3 @@ Features include:
 - updating an activity (toggling between complete / uncomplete)
 - deleting an activity
 - list all activities when page is first loaded or reloaded
-
-## Known Bugs
-PUT requests sent to backend results in an empty form body received by the backend despite configurations to enable CORS and accept OPTIONS requests.
