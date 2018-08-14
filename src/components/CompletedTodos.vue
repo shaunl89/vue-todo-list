@@ -32,6 +32,9 @@ export default {
   computed: {
     completed() {
       return this.$store.getters.completedTodos
+    },
+    loading() {
+      return this.$store.getters.isLoading
     }
   }
 }

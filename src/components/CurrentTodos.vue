@@ -4,6 +4,7 @@
       Outstanding Tasks: {{todos.length}}
     </h3>
     <h3 v-else>No items</h3>
+    <span v-if="loading" class="fa fa-spinner fa-spin loader"></span>
     <ul class="list-group">
       <li class="list-group-item" v-for="(todo, index) in todos" :key="`item=${index}`">
         {{todo.title}}
@@ -35,6 +36,9 @@
     computed: {
       todos() {
         return this.$store.getters.todos
+      },
+      loading() {
+        return this.$store.getters.isLoading
       }
     },
     created() {
@@ -49,5 +53,10 @@
   }
   #current-todos{
     margin-bottom: 40px;
+  }
+  .loader{
+    font-size: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 </style>

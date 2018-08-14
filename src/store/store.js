@@ -14,6 +14,9 @@ export default new Vuex.Store({
     loading: false,
   },
   mutations: {
+    SET_LOADING(state, status) {
+      state.loading = status
+    },
     SET_TODOS(state, todos) {
       state.todos = todos
     },
@@ -37,11 +40,13 @@ export default new Vuex.Store({
   },
   actions: {
     loadTodos({ commit }) {
+      commit('SET_LOADING', true)
       Axios
         .get(API)
         .then(response => response.data)
         .then(todos => {
           commit('SET_TODOS', todos.data)
+          commit('SET_LOADING', false)
         })
         .catch((err) => {
           // eslint-disable-next-line no-console
@@ -66,7 +71,7 @@ export default new Vuex.Store({
       }
       const todo = {
         title: state.newTodo,
-        completed: false,
+        completed: 0,
       }
       Axios
         .post(API, qs.stringify(todo))
@@ -134,26 +139,15 @@ export default new Vuex.Store({
       })
     },
     completeTodo({ commit }, todo) {
-      console.log('todo to be completed', todo.completed)
-      Axios({
-        method: 'put',
-        url: `${API}${todo.id}`,
-        data: qs.stringify({
+      const newStatus = !todo.completed ? 1 : 0
+      Axios
+      .put(
+        `${API}${todo.id}`,
+        qs.stringify({
           title: todo.title,
-          completed: !todo.completed,
-        }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-      })
-      // .put(
-      //   `${API}${todo.id}`,
-      //   qs.stringify({
-      //     title: todo.title,
-      //     completed: !todo.completed,
-      //   })
-      // )
+          completed: newStatus,
+        })
+      )
       .then(response => {
         // eslint-disable-next-line no-console
         console.log(response, todo.id, 'has been completed: ', todo.completed)
@@ -182,6 +176,7 @@ export default new Vuex.Store({
   getters: {
     newTodo: state => state.newTodo,
     todos: state => state.todos.filter((todo) => !todo.completed),
-    completedTodos: state => state.todos.filter((todo) => todo.completed)
+    completedTodos: state => state.todos.filter((todo) => todo.completed),
+    isLoading: state => state.loading
   }
 })
